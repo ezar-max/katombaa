@@ -1,5 +1,4 @@
 import React from 'react';
-import { Lock } from 'lucide-react';
 
 function IconWhatsApp() {
     return (
@@ -25,7 +24,7 @@ function IconFacebook() {
     );
 }
 
-export default function Footer({ settings = {} }) {
+export default function Footer({ settings = {}, onOpenLogin, isAdmin = false, onLogout }) {
     const siteName = settings.site_name || 'Katoomba Greenpark';
     const address = settings.address || 'Jl. Raya Bojong Nangka, Kec. Gunung Putri, Kabupaten Bogor, Jawa Barat 16963';
     const phone = settings.contact_phone || '(021) 867-0099';
@@ -50,13 +49,10 @@ export default function Footer({ settings = {} }) {
                                     src="/images/logo.png"
                                     alt={siteName}
                                     style={{
-                                        height: 48,
+                                        height: 52,
                                         width: 'auto',
                                         objectFit: 'contain',
-                                        background: '#fff',
-                                        borderRadius: 8,
-                                        padding: '3px 8px',
-                                        boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
+                                        filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.4))'
                                     }}
                                 />
                                 <div className="footer-brand" style={{ margin: 0 }}>
@@ -123,18 +119,19 @@ export default function Footer({ settings = {} }) {
                         </div>
                     </div>
 
-                    <div style={{ marginTop: 24, paddingTop: 16, borderTop: '1px solid rgba(255,255,255,.08)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
-                        <p style={{ fontSize: 12, color: 'rgba(255,255,255,.4)', margin: 0 }}>
-                            Katoomba Greenpark &mdash; Wisata Keluarga Bojong Nangka, Kec. Gunung Putri, Kabupaten Bogor.
-                        </p>
-                        <a
-                            href="/admin/login"
+                    <p className="footer-disclaimer">
+                        Katoomba Greenpark &mdash; Wisata Rekreasi &amp; Edukasi Keluarga di Bojong Nangka, Kec. Gunung Putri, Kabupaten Bogor.
+                    </p>
+
+                    {/* Centered Footer Admin Row matching Gunung Putri layout */}
+                    <div className="footer-admin-row">
+                        <button
+                            type="button"
                             className="admin-gate-link"
-                            style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 12, color: 'rgba(255,255,255,.5)', textDecoration: 'none' }}
+                            onClick={isAdmin ? onLogout : onOpenLogin}
                         >
-                            <Lock className="w-3 h-3" />
-                            <span>Portal Admin CMS</span>
-                        </a>
+                            {isAdmin ? 'Logout Admin' : 'Login Admin'}
+                        </button>
                     </div>
                 </div>
             </footer>

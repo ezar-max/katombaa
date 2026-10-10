@@ -6,6 +6,7 @@
     <title>{{ $settings['seo_title'] ?? 'Katoomba Greenpark — Wisata Rekreasi Keluarga di Gunung Putri Bogor' }}</title>
     <meta name="description" content="{{ $settings['seo_description'] ?? 'Taman wisata air dan edukasi keluarga seluas 3 hektar di Bojong Nangka, Gunung Putri, Bogor.' }}">
     <meta name="keywords" content="{{ $settings['seo_keywords'] ?? 'katoomba greenpark, wisata bogor, waterpark gunung putri' }}">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="robots" content="index, follow">
 
     <!-- Open Graph Metadata -->

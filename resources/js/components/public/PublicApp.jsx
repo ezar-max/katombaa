@@ -8,6 +8,7 @@ import Location from './Location';
 import Gallery from './Gallery';
 import CTASection from './CTASection';
 import Footer from './Footer';
+import LoginModal from './LoginModal';
 import { Eye, ArrowLeft, RefreshCw } from 'lucide-react';
 
 export default function PublicApp() {
@@ -21,12 +22,51 @@ export default function PublicApp() {
     const [facilities, setFacilities] = useState(rawData.facilities || []);
     const [isPreview, setIsPreview] = useState(false);
     const [loadingPreview, setLoadingPreview] = useState(false);
+    const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+
+    // Admin authentication state matching Gunung Putri behavior
+    const [isAdmin, setIsAdmin] = useState(() => {
+        try {
+            return localStorage.getItem('gp-admin-authed') === '1' || !!rawData.isAdmin;
+        } catch {
+            return !!rawData.isAdmin;
+        }
+    });
+
+    const [editGalleryMode, setEditGalleryMode] = useState(false);
+    const [bannerDismissed, setBannerDismissed] = useState(() => {
+        try {
+            return localStorage.getItem('gp-upload-banner-dismissed') === '1';
+        } catch {
+            return false;
+        }
+    });
+
+    useEffect(() => {
+        const onAdminChange = () => {
+            try {
+                const authed = localStorage.getItem('gp-admin-authed') === '1' || !!window.__INITIAL_DATA__?.isAdmin;
+                setIsAdmin(authed);
+                if (authed) {
+                    setBannerDismissed(false);
+                }
+            } catch {
+                setIsAdmin(!!window.__INITIAL_DATA__?.isAdmin);
+            }
+        };
+
+        window.addEventListener('gp-admin-change', onAdminChange);
+        return () => window.removeEventListener('gp-admin-change', onAdminChange);
+    }, []);
 
     useEffect(() => {
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.get('preview') === '1') {
             setIsPreview(true);
             loadPreviewData();
+        }
+        if (urlParams.get('login') === '1' || urlParams.get('login') === 'true' || window.location.hash === '#login') {
+            setIsLoginModalOpen(true);
         }
     }, []);
 
@@ -54,8 +94,80 @@ export default function PublicApp() {
         }
     };
 
+    const handleLogout = async () => {
+        try {
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || window.__CSRF_TOKEN__ || '';
+            await fetch('/admin/logout', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+        } catch (e) {}
+
+        try {
+            localStorage.setItem('gp-admin-authed', '0');
+        } catch {}
+        window.dispatchEvent(new Event('gp-admin-change'));
+        setIsAdmin(false);
+        setEditGalleryMode(false);
+    };
+
     return (
         <div className="min-h-screen flex flex-col bg-white">
+            {/* Gunung Putri Floating Admin Banner when Admin is logged in */}
+            {isAdmin && !bannerDismissed && (
+                <div className="upload-banner" role="status">
+                    <div className="upload-banner-icon" aria-hidden="true">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                            <polyline points="17 8 12 3 7 8" />
+                            <line x1="12" y1="3" x2="12" y2="15" />
+                        </svg>
+                    </div>
+                    <div className="upload-banner-text">
+                        <strong>Mode Admin Aktif:</strong>{" "}
+                        <span>Atur galeri foto (drag &amp; drop, ubah ukuran, edit caption) langsung di halaman.</span>
+                    </div>
+                    <div className="upload-banner-actions">
+                        <button
+                            type="button"
+                            className="upload-banner-btn"
+                            onClick={() => {
+                                setEditGalleryMode(true);
+                                const el = document.getElementById('galeri');
+                                if (el) el.scrollIntoView({ behavior: 'smooth' });
+                            }}
+                        >
+                            Atur Galeri
+                        </button>
+                        <button
+                            type="button"
+                            className="upload-banner-btn ghost"
+                            onClick={handleLogout}
+                        >
+                            Keluar
+                        </button>
+                    </div>
+                    <button
+                        type="button"
+                        className="upload-banner-close"
+                        onClick={() => {
+                            setBannerDismissed(true);
+                            try { localStorage.setItem('gp-upload-banner-dismissed', '1'); } catch {}
+                        }}
+                        aria-label="Tutup"
+                    >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                            <path d="M6 6l12 12M18 6L6 18" />
+                        </svg>
+                    </button>
+                </div>
+            )}
+
             {/* Admin Preview Top Banner */}
             {isPreview && (
                 <div style={{
@@ -74,7 +186,7 @@ export default function PublicApp() {
                 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                         <Eye className="w-4 h-4" />
-                        <span>Mode Pratinjau Admin Aktif (Termasuk Konten Draf & Perubahan Belum Tayang)</span>
+                        <span>Mode Pratinjau Admin Aktif (Termasuk Konten Draf &amp; Perubahan Belum Tayang)</span>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                         <button
@@ -122,7 +234,7 @@ export default function PublicApp() {
             {/* Navigation Bar */}
             <Navigation settings={settings} />
 
-            {/* Main Content Sections in exact Gunung Putri order */}
+            {/* Main Content Sections */}
             <main className="flex-1">
                 {/* 1. Hero Section */}
                 <Hero
@@ -157,10 +269,12 @@ export default function PublicApp() {
                     settings={settings}
                 />
 
-                {/* 6. Gallery Section */}
+                {/* 6. Gallery Section with Gunung Putri live editing features */}
                 <Gallery
                     section={sections.gallery || {}}
                     gallery={gallery}
+                    isAdmin={isAdmin}
+                    editModeProp={editGalleryMode}
                 />
 
                 {/* 7. Final Call to Action & Contact Form */}
@@ -170,8 +284,23 @@ export default function PublicApp() {
                 />
             </main>
 
-            {/* Footer */}
-            <Footer settings={settings} />
+            {/* Footer with exact Gunung Putri Admin Gate & Links */}
+            <Footer 
+                settings={settings} 
+                onOpenLogin={() => setIsLoginModalOpen(true)}
+                isAdmin={isAdmin}
+                onLogout={handleLogout}
+            />
+
+            {/* Admin Login Popup Modal matching Gunung Putri 1:1 */}
+            <LoginModal 
+                isOpen={isLoginModalOpen} 
+                onClose={() => setIsLoginModalOpen(false)}
+                onLoginSuccess={() => {
+                    setIsAdmin(true);
+                    setBannerDismissed(false);
+                }}
+            />
         </div>
     );
 }

@@ -142,7 +142,7 @@ export default function AdminApp() {
                         <img
                             src="/images/logo.png"
                             alt="Logo"
-                            className="h-10 w-auto rounded-lg bg-white p-1 shadow-md object-contain"
+                            className="h-10 w-auto object-contain filter drop-shadow-md"
                         />
                         <div>
                             <h1 className="font-extrabold text-base tracking-tight leading-none text-white">

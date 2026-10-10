@@ -3,112 +3,109 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Masuk Admin — Katoomba Greenpark</title>
+    <title>Login Admin — Katoomba Greenpark</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
     @vite(['resources/css/app.css'])
 </head>
-<body class="min-h-screen bg-gradient-to-br from-[#0A2C45] via-[#0F3D5F] to-[#14233A] flex items-center justify-center p-4 font-['Plus_Jakarta_Sans',sans-serif]">
-    <div class="w-full max-w-md">
-        <!-- Brand Header -->
-        <div class="text-center mb-8">
-            <a href="/" class="inline-flex items-center gap-2 text-white/90 hover:text-white mb-3 text-xs tracking-widest font-semibold uppercase transition">
-                <span>← Kembali ke Website Publik</span>
-            </a>
-            <img src="/images/logo.png" alt="Logo Katoomba" class="h-16 w-auto mx-auto mb-4 bg-white rounded-xl p-2 shadow-2xl object-contain">
-            <h1 class="text-2xl font-bold text-white tracking-tight">Katoomba CMS Admin</h1>
-            <p class="text-sm text-slate-300 mt-1">Kelola konten dan informasi wisata Katoomba Greenpark</p>
-        </div>
+<body class="min-h-screen bg-slate-900/70 backdrop-blur-md flex items-center justify-center p-4 font-['Plus_Jakarta_Sans',sans-serif] relative">
+    
+    <!-- Background overlay simulating public landing page context -->
+    <div class="fixed inset-0 -z-10 bg-cover bg-center opacity-30 filter blur-sm" style="background-image: url('https://images.unsplash.com/photo-1576013551627-0cc20b96c2a7?auto=format&fit=crop&w=1600&q=80');"></div>
 
-        <!-- Login Card -->
-        <div class="bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl p-8 border border-white/40">
-            @if ($errors->any())
-                <div class="mb-6 p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm">
-                    <div class="font-semibold mb-1">Gagal Masuk:</div>
-                    <ul class="list-disc list-inside space-y-0.5 text-xs">
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
+    <!-- Popup Modal Card - Matching Gunung Putri Design -->
+    <div class="relative w-full max-w-[420px] bg-[#FAF8F5] rounded-3xl p-7 md:p-8 shadow-2xl border border-black/5 animate-in fade-in zoom-in-95 duration-150">
+        <!-- Close Button returning to public home -->
+        <a 
+            href="/" 
+            class="absolute top-6 right-6 w-8 h-8 rounded-full bg-slate-200/70 hover:bg-slate-300 text-slate-500 hover:text-slate-800 flex items-center justify-center transition cursor-pointer"
+            aria-label="Kembali ke Beranda"
+        >
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+        </a>
 
-            @if (session('status'))
-                <div class="mb-6 p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm font-medium">
-                    {{ session('status') }}
-                </div>
-            @endif
+        <!-- Title -->
+        <h1 class="text-2xl font-bold text-[#1E3A5F] mb-6">
+            Login Admin
+        </h1>
 
-            <form action="{{ route('admin.login.submit') }}" method="POST" class="space-y-5">
-                @csrf
+        <!-- Brand context tag for accessibility & SEO -->
+        <div class="sr-only">Katoomba Greenpark</div>
 
-                <div>
-                    <label for="email" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">
-                        Alamat Email Admin
-                    </label>
-                    <input
-                        type="email"
-                        id="email"
-                        name="email"
-                        value="{{ old('email', 'admin@katoomba.id') }}"
-                        required
-                        autofocus
-                        class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#0F3D5F] focus:border-transparent text-sm bg-slate-50/50 hover:bg-white transition"
-                        placeholder="admin@katoomba.id"
-                    >
-                </div>
+        <!-- Alert messages -->
+        @if ($errors->any())
+            <div class="mb-5 p-3.5 rounded-xl bg-red-50 border border-red-200 text-red-600 text-xs font-medium">
+                @foreach ($errors->all() as $error)
+                    <p>{{ $error }}</p>
+                @endforeach
+            </div>
+        @endif
 
-                <div>
-                    <div class="flex items-center justify-between mb-2">
-                        <label for="password" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider">
-                            Kata Sandi
-                        </label>
-                    </div>
-                    <input
-                        type="password"
-                        id="password"
-                        name="password"
-                        required
-                        class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#0F3D5F] focus:border-transparent text-sm bg-slate-50/50 hover:bg-white transition"
-                        placeholder="••••••••••••"
-                    >
-                </div>
+        @if (session('status'))
+            <div class="mb-5 p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-medium">
+                {{ session('status') }}
+            </div>
+        @endif
 
-                <div class="flex items-center justify-between pt-1">
-                    <label class="flex items-center gap-2 cursor-pointer select-none">
-                        <input
-                            type="checkbox"
-                            name="remember"
-                            class="rounded border-slate-300 text-[#0F3D5F] focus:ring-[#0F3D5F]"
-                        >
-                        <span class="text-xs text-slate-600 font-medium">Ingat sesi saya</span>
-                    </label>
-                </div>
+        <form action="{{ route('admin.login.submit') }}" method="POST" class="space-y-4">
+            @csrf
 
+            <div>
+                <label for="email" class="block text-sm font-medium text-slate-700 mb-1.5">
+                    Email
+                </label>
+                <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    value="{{ old('email', 'admin@katoomba.id') }}"
+                    required
+                    autofocus
+                    class="w-full px-4 py-3 bg-white border border-slate-300 rounded-xl text-slate-800 placeholder-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-[#1E3A5F] focus:border-transparent transition"
+                    placeholder="admin@katoomba.id"
+                >
+            </div>
+
+            <div>
+                <label for="password" class="block text-sm font-medium text-slate-700 mb-1.5">
+                    Password
+                </label>
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    required
+                    class="w-full px-4 py-3 bg-[#F1F0F2] border border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-[#1E3A5F] focus:bg-white focus:border-transparent transition"
+                    placeholder="••••••••••••"
+                >
+            </div>
+
+            <input type="hidden" name="remember" value="1">
+
+            <div class="pt-2">
                 <button
                     type="submit"
-                    class="w-full py-3.5 px-4 bg-[#0F3D5F] hover:bg-[#0A2C45] text-white font-semibold rounded-xl text-sm transition shadow-lg shadow-[#0F3D5F]/25 flex items-center justify-center gap-2 active:scale-[0.99]"
+                    style="background-color: #1E3A5F; color: #ffffff;"
+                    class="w-full py-3.5 px-6 rounded-full hover:opacity-90 font-semibold text-sm transition shadow-md hover:shadow-lg flex items-center justify-center gap-2 cursor-pointer active:scale-[0.99]"
                 >
-                    <span>Masuk ke Dashboard</span>
-                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                    </svg>
+                    <span>Masuk</span>
+                    <span class="sr-only">Masuk ke Dashboard</span>
                 </button>
-            </form>
-
-            <div class="mt-6 pt-6 border-t border-slate-100 text-center">
-                <div class="text-xs text-slate-500 bg-slate-50 p-3 rounded-lg border border-slate-100">
-                    <span class="font-semibold text-slate-700">Kredensial Seeder Bawaan:</span><br>
-                    Email: <code class="text-[#0F3D5F] font-bold">admin@katoomba.id</code><br>
-                    Password: <code class="text-[#0F3D5F] font-bold">AdminKatoomba2025!</code>
-                </div>
             </div>
-        </div>
 
-        <div class="text-center mt-6 text-xs text-white/50">
-            &copy; {{ date('Y') }} Katoomba Greenpark • Protected Administration Panel
-        </div>
+            <div class="text-center pt-2">
+                <a 
+                    href="javascript:void(0)" 
+                    onclick="alert('Untuk pemulihan kata sandi, silakan hubungi super administrator sistem Katoomba Greenpark.');"
+                    class="text-xs text-[#1E3A5F] hover:underline font-medium cursor-pointer"
+                >
+                    Lupa Password?
+                </a>
+            </div>
+        </form>
     </div>
 </body>
 </html>

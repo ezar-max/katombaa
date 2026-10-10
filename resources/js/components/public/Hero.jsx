@@ -54,7 +54,7 @@ export default function Hero({ section = {}, settings = {} }) {
                         src={imageUrl}
                         alt={title}
                         caption="Katoomba Greenpark Hero (1920×1200)"
-                        style={{ width: '100%', height: '120%', objectFit: 'cover' }}
+                        style={{ width: '100%', height: '120%', objectFit: 'cover', objectPosition: 'center 15%' }}
                     />
                 </div>
             </div>

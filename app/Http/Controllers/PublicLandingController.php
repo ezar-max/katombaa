@@ -49,6 +49,7 @@ class PublicLandingController extends Controller
             'gallery' => $gallery,
             'tickets' => $tickets,
             'facilities' => $facilities,
+            'isAdmin' => auth()->check(),
         ];
 
         return view('public.index', compact(

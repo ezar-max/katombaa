@@ -59,14 +59,12 @@ export default function Navigation({ settings = {} }) {
                         src="/images/logo.png"
                         alt={settings.site_name || 'Katoomba Greenpark'}
                         style={{
-                            height: 44,
+                            height: 48,
                             width: 'auto',
                             objectFit: 'contain',
                             display: 'block',
-                            background: scrolled ? 'transparent' : 'rgba(255, 255, 255, 0.95)',
-                            padding: scrolled ? '0' : '2px 8px',
-                            borderRadius: 8,
-                            boxShadow: scrolled ? 'none' : '0 2px 10px rgba(0,0,0,0.15)',
+                            background: 'transparent',
+                            filter: scrolled ? 'none' : 'drop-shadow(0 2px 6px rgba(0,0,0,0.5))',
                             transition: 'all .25s ease'
                         }}
                     />
